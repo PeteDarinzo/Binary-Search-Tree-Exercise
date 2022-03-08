@@ -165,13 +165,61 @@ class BinarySearchTree {
 
   remove(val) {
 
+    function isLeaf(node) {
+      return (node.left === null) && (node.right === null);
+    }
+
+    function hasChild(node) {
+      return ((node.left || node.right) && !(node.left && node.right));
+    }
+
+    function hasChildren(node) {
+      return (node.left && node.right);
+    }
+
+    let current = this.root;
+    while (current) {
+      if (current.left && (current.left.val === val)) {
+        let node = current.left;
+        if (isLeaf(node)) current.left = null;
+        if (hasChild(node)) { // node has single child
+          if (node.left) {
+            current.left = node.left;
+          } else {
+            current.left = node.right;
+          }
+        }
+        return node;
+      } else if (current.right && (current.right.val === val)) {
+        let node = current.right;
+        if (isLeaf(node)) current.right = null;
+        if (hasChild(node)) { // node has single child
+          if (node.left) {
+            current.right = node.left;
+          } else {
+            current.right = node.right;
+          }
+        }
+        return node;
+      } else if (current.val > val) {
+        current = current.left;
+      } else if (current.val < val) {
+        current = current.right;
+      }
+    }
+    return undefined;
   }
 
   /** Further Study!
    * isBalanced(): Returns true if the BST is balanced, false otherwise. */
 
   isBalanced() {
-
+    const rootVal = this.root.val;
+    const nodes = this.dfsInOrder();
+    const rootIdx = nodes.indexOf(rootVal);
+    const leftNodes = nodes.slice(0, rootIdx);
+    const rightNodes = nodes.slice(rootIdx + 1, nodes.length);
+    return (Math.abs(leftNodes.length - rightNodes.length) <= 1);
   }
 
   /** Further Study!
@@ -179,7 +227,12 @@ class BinarySearchTree {
    * Otherwise return undefined. */
 
   findSecondHighest() {
-
+    if (this.root === null) return undefined;
+    let current = this.root;
+    while (current.right.right) {
+      current = current.right;
+    }
+    return current.val;
   }
 }
 
